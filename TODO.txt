@@ -1,8 +1,16 @@
 #TODO
-    - Refactor expr.py such that expressions are never modified in place, but rather recreated from existing expressions.
-    - Modify minesweeper.py to enable the verification and printing of forced variables, and the values they are forced
-    to
-    - cleanup codebase of BDD.py
-    - add comments to BDD.py
-    - add comments to expr.py
-    - add readme file
+    - BDD.py
+        - cleanup codebase
+        - add comments
+    - expr.py
+        - add comments
+        - Refactor expr.py such that expressions are never modified in place,
+            but rather recreated from existing expressions.
+        - create test for the uniquify methods, and verify they are correct.
+    - minesweeper.py
+        - Modify minesweeper.py to enable the verification and printing of forced variables,
+            as well as the values of the forced variables
+    - readme.txt
+        - add file
+    - main.py
+        - comments?
