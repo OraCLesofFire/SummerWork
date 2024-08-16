@@ -2,8 +2,8 @@
 
 import sys
 
-import BDDTest
-import bdd
+import BDD
+import bddAPI
 import re
 
 def fact(n):
@@ -26,11 +26,11 @@ def allOnes(n,k):
     return [Ones(n,k,i) for i in range(n_choose_k(n,k))]
 
 def applyMask(m,vs):
-    return [v if p else bdd.Not(v) for (p,v) in zip(m,vs)]
+    return [v if p else bddAPI.Not(v) for (p,v) in zip(m,vs)]
 
 ## This function generates a k/n constraint.
 def allSums(k,vs):
-    return bdd.Or([bdd.And(applyMask(m,vs)) for m in allOnes(len(vs),k)])
+    return bddAPI.Or([bddAPI.And(applyMask(m,vs)) for m in allOnes(len(vs),k)])
 
 ## We do this just to make it easy to access the
 ## periphery of a given cell.
@@ -63,7 +63,7 @@ def variables(K,VARS):
 
 
 def variableEntry(row,col,c):
-    if c == '?': return [bdd.Bool("({},{})".format(row,col))]
+    if c == '?': return [bddAPI.Bool("({},{})".format(row,col))]
     return []
 
 
@@ -77,13 +77,13 @@ def decode(e):
 
 
 def tuplevar(s):
-    if s[0] == '!': return bdd.Not(bdd.Bool(s[1:]))
-    return bdd.Bool(s)
+    if s[0] == '!': return bddAPI.Not(bddAPI.Bool(s[1:]))
+    return bddAPI.Bool(s)
 
 
 def forcedvar(v,row,col):
-    if v == '@': return (True,bdd.Not(bdd.Bool("({},{})".format(row,col))))
-    if v == '!': return (True,bdd.Bool("({},{})".format(row,col)))
+    if v == '@': return (True,bddAPI.Not(bddAPI.Bool("({},{})".format(row,col))))
+    if v == '!': return (True,bddAPI.Bool("({},{})".format(row,col)))
     return (False,None)
 
 
@@ -133,8 +133,8 @@ def processFile(path):
 
 
 def pyval(x):
-    if bdd.is_true(x): return True
-    if bdd.is_false(x): return False
+    if bddAPI.is_true(x): return True
+    if bddAPI.is_false(x): return False
     raise Exception("We expect only Boolean results : {}".format(x))
 
 # def check():
@@ -151,23 +151,23 @@ def pyval(x):
 
 
 def checkSAT(c,vlist):
-    s = bdd.Solver()
+    s = bddAPI.Solver()
     s.add(c)
-    if s.check() != bdd.sat: raise Exception("Unsatisfiable Constraints")
+    if s.check() != bddAPI.sat: raise Exception("Unsatisfiable Constraints")
     m = s.model()
     solution = {v:pyval(m.eval(v, model_completion=True)) for v in vlist}
     return solution
 
 
 def checkForce(f, c):
-    s = bdd.Solver()
-    c = bdd.And([bdd.Not(f),c])
+    s = bddAPI.Solver()
+    c = bddAPI.And([bddAPI.Not(f),c])
     s.add(c)
-    return s.check() != bdd.sat
+    return s.check() != bddAPI.sat
 
 
 def tuplestr(v):
-    assert isinstance(v, BDDTest.NonTerminal)
+    assert isinstance(v, BDD.NonTerminal)
     # I have to use nonterminal here, I am slightly concerned
     # return v.varid
     sv = str(v)
@@ -177,7 +177,7 @@ def tuplestr(v):
 def confirmUnforced(c, solution):
     acc = True
     for (v,b) in solution.items():
-        vx = v if b else bdd.Not(v)
+        vx = v if b else bddAPI.Not(v)
         res = checkForce(vx,c)
         print("Tuple {:>5} {}forced {}".format(tuplestr(v), '*IS* ' if res else 'is un', "to {}".format(b) if res else ""))
         acc &= not res
@@ -189,7 +189,7 @@ def checkFile(fname, ok=None):
     print("\nChecking: {}".format(fname))
     (forces, K) = processFile(fname)
     VARS = variableMatrix(K)
-    c = bdd.And(constraints(K, VARS))
+    c = bddAPI.And(constraints(K, VARS))
     vlist = variables(K, VARS)
     solution = checkSAT(c, vlist)
     acc = True

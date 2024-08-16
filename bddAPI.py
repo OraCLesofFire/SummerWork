@@ -1,42 +1,42 @@
-import BDDTest
+import BDD
 
 
 def Not(x):
-    assert isinstance(x, BDDTest.BDD)
-    return BDDTest.BDD.Not(x)
+    assert isinstance(x, BDD.BDD)
+    return BDD.BDD.Not(x)
 
 
 def And(args):
     if len(args) == 0:
-        return BDDTest.NonTerminal.one
-    assert isinstance(args[0], BDDTest.BDD)
+        return BDD.NonTerminal.one
+    assert isinstance(args[0], BDD.BDD)
     if len(args) == 1:
         return args[0]
     else:
         v1 = args[0]
         for v in args[1:]:
-            assert isinstance(v, BDDTest.BDD)
+            assert isinstance(v, BDD.BDD)
             v1 = v1.And(v)
         return v1
 
 
 def Or(args):
     if len(args) == 0:
-        return BDDTest.NonTerminal.zero
-    assert isinstance(args[0], BDDTest.BDD)
+        return BDD.NonTerminal.zero
+    assert isinstance(args[0], BDD.BDD)
     if len(args) == 1:
         return args[0]
     else:
         v1 = args[0]
         for v in args[1:]:
-            assert isinstance(v, BDDTest.BDD)
+            assert isinstance(v, BDD.BDD)
             v1 = v1.Or(v)
         return v1
 
 
 def Bool(x):
     # create a new variable with name x
-    return BDDTest.NonTerminal(x, BDDTest.NonTerminal.zero, BDDTest.NonTerminal.one)
+    return BDD.NonTerminal(x, BDD.NonTerminal.zero, BDD.NonTerminal.one)
 
 
 def is_true(x):
@@ -54,7 +54,7 @@ def is_false(x):
 
 class Solver():
     def __init__(self):
-        self.x = BDDTest.Solver()
+        self.x = BDD.Solver()
         return
 
     def add(self, c):
@@ -80,8 +80,9 @@ class Model():
     def eval(self, variable, model_completion=True):
         # Return the value of the named variable.
         assert isinstance(self.x, dict)
-        assert isinstance(variable, BDDTest.NonTerminal)
+        assert isinstance(variable, BDD.NonTerminal)
         return self.x.get(variable.varid, False)
     pass
+
 
 sat = 'sat'

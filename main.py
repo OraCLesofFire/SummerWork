@@ -1,7 +1,8 @@
-import BDDTest
+import BDD
 import env
 import random
 import expr
+
 
 def randomBDD(v=None):
     vlookup = [None, "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
@@ -17,19 +18,19 @@ def randomBDD(v=None):
         left = randomBDD(varid)
     else:
         left = rand.randrange(0, 2)
-        left = BDDTest.NonTerminal.one if left == 1 else BDDTest.NonTerminal.zero
+        left = BDD.NonTerminal.one if left == 1 else BDD.NonTerminal.zero
     right = rand.randrange(0, 2)
     if right == 1 and vlookup.index(varid) > 1:
         right = randomBDD(varid)
     else:
         right = rand.randrange(0, 2)
-        right = BDDTest.NonTerminal.one if right == 1 else BDDTest.NonTerminal.zero
+        right = BDD.NonTerminal.one if right == 1 else BDD.NonTerminal.zero
     if left == right:
-        if left == BDDTest.NonTerminal.zero:
-            left = BDDTest.NonTerminal.one
+        if left == BDD.NonTerminal.zero:
+            left = BDD.NonTerminal.one
         else:
-            left = BDDTest.NonTerminal.zero
-    return BDDTest.NonTerminal(varid, left, right)
+            left = BDD.NonTerminal.zero
+    return BDD.NonTerminal(varid, left, right)
 
 
 def randomEnv():
@@ -189,10 +190,10 @@ def BDDTests():
     y = A
     assert x == y
     x = A.And(A.Not())
-    y = BDDTest.NonTerminal.zero
+    y = BDD.NonTerminal.zero
     assert x == y
     x = A.Or(A.Not())
-    y = BDDTest.NonTerminal.one
+    y = BDD.NonTerminal.one
     assert x == y
     x = A.Or(A.Not().And(B))
     y = A.Or(B)
@@ -226,7 +227,7 @@ def EXPRTests():
     e = randomEnvL(newv)
     assert x.eval(e) == y.eval(e)
 
-    b = BDDTest.BDD()
+    b = BDD.BDD()
     c = b.expr_transform(x)
     d = b.expr_transform(y)
     assert c == d
