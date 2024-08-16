@@ -18,7 +18,7 @@ class Solver():
 
     def check(self):
         if not self.checked:
-            x = list[0]
+            x = self.explist[0]
             assert isinstance(x, BDD)
             for i in range(len(self.explist[1:])):
                 y = self.explist[i]
@@ -29,11 +29,10 @@ class Solver():
                 self.sat = "no"
                 self.model = None
             else:
-                self.sat = "sat"
+                self.sat = 'sat'
                 self.model = x
         self.checked = True
         return self.sat
-
     def model(self):
         if self.checked:
             return self.model
@@ -414,6 +413,9 @@ class NonTerminal(BDD):
 
         # metadata
         self.numVertices = self.left.num_vertices() + self.right.num_vertices()
+
+    def __str__(self):
+        return self.varid
 
     def num_vertices(self):
         return self.numVertices

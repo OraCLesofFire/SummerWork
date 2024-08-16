@@ -6,38 +6,50 @@ def Not(x):
     return BDDTest.BDD.Not(x)
 
 
-def And(*args):
-    v1 = args[0]
-    assert isinstance(v1, BDDTest.BDD)
-    for v in args:
-        assert isinstance(v, BDDTest.BDD)
-        v1 = v1.And(v)
-    return v1
+def And(args):
+    if len(args) == 0:
+        return BDDTest.NonTerminal.one
+    assert isinstance(args[0], BDDTest.BDD)
+    if len(args) == 1:
+        return args[0]
+    else:
+        v1 = args[0]
+        for v in args[1:]:
+            assert isinstance(v, BDDTest.BDD)
+            v1 = v1.And(v)
+        return v1
 
 
-def Or(*args):
-    v1 = args[0]
-    assert isinstance(v1, BDDTest.BDD)
-    for v in args:
-        assert isinstance(v, BDDTest.BDD)
-        v1 = v1.Or(v)
-    return v1
+def Or(args):
+    if len(args) == 0:
+        return BDDTest.NonTerminal.zero
+    assert isinstance(args[0], BDDTest.BDD)
+    if len(args) == 1:
+        return args[0]
+    else:
+        v1 = args[0]
+        for v in args[1:]:
+            assert isinstance(v, BDDTest.BDD)
+            v1 = v1.Or(v)
+        return v1
 
 
 def Bool(x):
     # create a new variable with name x
-    return BDDTest.NonTerminal(x, 0, 1)
+    return BDDTest.NonTerminal(x, BDDTest.NonTerminal.zero, BDDTest.NonTerminal.one)
 
 
 def is_true(x):
     # test whether the variable resolves to true
-    return x == BDDTest.NonTerminal.one
+    return x
+    # return x == BDDTest.NonTerminal.one
 
 
 def is_false(x):
     # test whether the variable resolves to false
     # is always false .. might just be python False
-    return x == BDDTest.NonTerminal.zero
+    return not x
+    # return x == BDDTest.NonTerminal.zero
 
 
 class Solver():
@@ -62,10 +74,14 @@ class Solver():
 class Model():
     # This is just a mapping from variables to values
     def __init__(self, x):
-        self.x = x
+        self.x = dict(x)
         return
 
     def eval(self, variable, model_completion=True):
         # Return the value of the named variable.
-        return self.x.eval(variable, model_completion=model_completion)
+        assert isinstance(self.x, dict)
+        assert isinstance(variable, BDDTest.NonTerminal)
+        return self.x.get(variable.varid, False)
     pass
+
+sat = 'sat'
