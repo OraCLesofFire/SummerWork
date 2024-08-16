@@ -3,6 +3,7 @@ import env
 import random
 import expr
 
+print("A")
 
 def randomBDD(v=None):
     vlookup = [None, "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
