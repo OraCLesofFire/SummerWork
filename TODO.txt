@@ -1,0 +1,8 @@
+#TODO
+    - Refactor expr.py such that expressions are never modified in place, but rather recreated from existing expressions.
+    - Modify minesweeper.py to enable the verification and printing of forced variables, and the values they are forced
+    to
+    - cleanup codebase of BDD.py
+    - add comments to BDD.py
+    - add comments to expr.py
+    - add readme file
