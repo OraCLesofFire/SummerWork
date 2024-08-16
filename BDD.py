@@ -3,7 +3,7 @@ import env
 import expr
 
 
-class Solver():
+class Solver:
 
     def __init__(self):
         self.explist = []
@@ -24,7 +24,7 @@ class Solver():
                 y = self.explist[i]
                 assert isinstance(y, BDD)
                 x = x.And(y)
-            x = x.getModel()
+            x = x.getModel
             if x is None:
                 self.sat = "no"
                 self.model = None
@@ -124,19 +124,19 @@ class BDD(object):
             e = dict()
             solutionExists = False
             e[self.varid] = False
-            e, solutionExists = self.left._getModel(e, solutionExists)
+            e, solutionExists = self.left.__getModel__(e, solutionExists)
             if solutionExists:
                 return env.Env(**e)
             else:
                 assert isinstance(e, dict)
                 e[self.varid] = True
-                e, solutionExists = self.right._getModel(e, solutionExists)
+                e, solutionExists = self.right.__getModel__(e, solutionExists)
             if solutionExists:
                 return env.Env(**e)
             else:
                 return None
 
-    def _getModel(self, e, solutionExists):
+    def __getModel__(self, e, solutionExists):
 
         # if our solution is already found, just return
         if solutionExists:
@@ -154,11 +154,11 @@ class BDD(object):
             assert isinstance(e, dict)
             assert isinstance(self, NonTerminal)
             e[self.varid] = False
-            e, solutionExists = self.left._getModel(e, solutionExists)
+            e, solutionExists = self.left.__getModel__(e, solutionExists)
             if not solutionExists:
                 assert isinstance(e, dict)
                 e[self.varid] = True
-                e, solutionExists = self.right._getModel(e, solutionExists)
+                e, solutionExists = self.right.__getModel__(e, solutionExists)
                 assert isinstance(e, dict)
                 if not solutionExists:
                     e.pop(self.varid)

@@ -3,7 +3,7 @@ import env
 import copy
 
 
-class Expr():
+class Expr:
     def eval(self, e):
         raise Exception()
 
@@ -17,7 +17,7 @@ class Expr():
     def print(self):
         raise Exception()
 
-    def prettyprint(self, s=None):
+    def prettyprint(self):
         return self.__pretty_printh__(0)
 
     def __pretty_printh__(self, depth):

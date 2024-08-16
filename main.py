@@ -215,7 +215,6 @@ def EXPRTests():
     y = x.rebuild()
     v = x.get_vars()
 
-
     newv = []
     for var in v:
         if var not in newv:
