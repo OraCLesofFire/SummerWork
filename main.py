@@ -5,6 +5,7 @@ import expr
 
 
 def randomBDD(v=None):
+    # create a random bdd using the variables A-J
     vlookup = [None, "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
     if v is None:
         varid = rand.randint(1, 10)
@@ -34,22 +35,16 @@ def randomBDD(v=None):
 
 
 def randomEnv():
-    vlookup = [None, "A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
-    e = dict()
-    for i in range(1, 10):
-        if rand.randint(0, 1):
-            e[vlookup[i]] = rand.choice([True, False])
-    return env.Env(**e)
+    return randomEnvL(["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"])
 
 
 def randomEnvBool():
-    e = dict()
-    e['x'] = rand.choice([True, False])
-    e['y'] = rand.choice([True, False])
-    return env.Env(**e)
+    # create a random environment using the variables ['x']['y']
+    return randomEnvL(['x', 'y'])
 
 
 def randomEnvL(vlookup):
+    # create a random environment using the variables presented
     e = dict()
     for i in range(0, len(vlookup)):
         e[vlookup[i]] = rand.choice([True, False])
@@ -220,6 +215,9 @@ def EXPRTests():
     y = x.rebuild()
     v = x.getvars()
 
+    x.prettyprint()
+    y.prettyprint()
+
     newv = []
     for var in v:
         if var not in newv:
@@ -240,16 +238,17 @@ def main():
     end = 10000
     # end = 1
     # end = 0
-    test = [end/10 * val for val in range(10)]
+    test = [end/10 * val for val in range(11)]
     while n < end:
         global rand
         rand = random.Random(n)
         BDDTests()
         EXPRTests()
+        n += 1
 
+        # completion percent
         if n in test:
             print((n/(end/100)), "%")
-        n += 1
 
 
 global global_vars
