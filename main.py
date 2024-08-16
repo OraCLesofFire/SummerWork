@@ -213,27 +213,28 @@ def BDDTests():
 def EXPRTests():
     x = randomExpr()
     y = x.rebuild()
-    v = x.getvars()
+    v = x.get_vars()
 
-    x.prettyprint()
-    y.prettyprint()
 
     newv = []
     for var in v:
         if var not in newv:
             newv.append(var)
     e = randomEnvL(newv)
+    # check that the evaluation using a random evaluator is correct.
     assert x.eval(e) == y.eval(e)
 
     b = BDD.BDD()
     c = b.expr_transform(x)
     d = b.expr_transform(y)
+    # check that they are equivalent by doing a BDD transformation.
     assert c == d
 
 
 def main():
     global global_vars
     global_vars = ["K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"]
+
     n = 0
     end = 10000
     # end = 1
