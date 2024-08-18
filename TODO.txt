@@ -1,12 +1,15 @@
 #TODO
     - BDD.py
+        - add type assertions
         - cleanup codebase
         - add comments
     - expr.py
+        - add type assertions
         - add comments
         - Refactor expr.py such that expressions are never modified in place,
             but rather recreated from existing expressions.
         - create test for the uniquify methods, and verify they are correct.
+        - create a method __rebuild2__() that moves a nested expression into a let statement with a new variable
     - minesweeper.py
         - Modify minesweeper.py to enable the verification and printing of forced variables,
             as well as the values of the forced variables
