@@ -50,6 +50,7 @@ class BDD(object):
         self.mark = False
 
     def __eq__(self, other):
+        assert isinstance(other, BDD)
         return self.id == other.id
 
     def __hash__(self):
@@ -57,6 +58,8 @@ class BDD(object):
 
     @classmethod
     def non_terminal(cls, v, l, r):
+        assert isinstance(l, BDD)
+        assert isinstance(r, BDD)
         if l == r:
             return l
         else:
@@ -71,7 +74,7 @@ class BDD(object):
             return 1
         else:
             assert isinstance(self, NonTerminal)
-            return self.left.num_vertices() + self.right.num_vertices()
+            return self.left.num_vertices() + self.right.num_vertices() + 1
 
     def print(self, string=None):
         print(string)
