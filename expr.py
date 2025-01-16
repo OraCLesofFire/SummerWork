@@ -25,8 +25,9 @@ class Expr:
         raise Exception()
 
     def rebuild_3(self):
+        clearVars()
         newcopy = copy.deepcopy(self)
-        return newcopy._rebuild_3(self)
+        return self._rebuild_3(newcopy)
 
     def _rebuild_3(self, start):
         raise Exception()
@@ -338,12 +339,154 @@ class Let(Expr):
 
     def _rebuild_3(self, start):
         assert not isinstance(self.e1, Var)
+        e = Expr
+        v = Var(self.v.name)
+        if isinstance(self.e1, Not):
+            e = And2(
+                Ior2(
+                    v,
+                    self.e1.x),
+                Ior2(
+                    Not(v),
+                    Not(self.e1.x)
+                )
+            )
+            return And2(e, self.e2._rebuild_3(start))
+        elif isinstance(self.e1, Buf):
+            e = And2(
+                Ior2(
+                    Not(v),
+                    self.e1.x),
+                Ior2(
+                    v,
+                    Not(self.e1.x)
+                )
+            )
+            return And2(e, self.e2._rebuild_3(start))
+        elif isinstance(self.e1, And2):
+            assert isinstance(self.e1, Expr2)
+            e = And2(
+                    Ior2(
+                        Not(v),
+                        self.e1.x
+                    ),
+                    And2(
+                        Ior2(
+                            Not(v),
+                            self.e1.y
+                        ),
+                        Ior2(
+                            v,
+                            Ior2(
+                                Not(self.e1.x),
+                                Not(self.e1.y)
+                            )
+                        )
+                    )
+            )
+        elif isinstance(self.e1, Ior2):
+            assert isinstance(self.e1, Expr2)
+            e = And2(
+                Ior2(
+                    v,
+                    Not(self.e1.y)
+                ),
+                And2(
+                    Ior2(
+                        v,
+                        Not(self.e1.x)
+                    ),
+                    Ior2(
+                        Not(v),
+                        Ior2(
+                            self.e1.x,
+                            self.e1.y
+                        )
+                    )
+                )
+            )
+        elif isinstance(self.e1, Xor2):
+            assert isinstance(self.e1, Expr2)
+            e = And2(
+                Ior2(
+                    Not(v),
+                    Ior2(
+                        self.e1.x,
+                        self.e1.y
+                    )
+                ),
+                And2(
+                    Ior2(
+                        v,
+                        Ior2(
+                            self.e1.x,
+                            Not(self.e1.y)
+                        )
+                    ),
+                    And2(
+                        Ior2(
+                            Not(v),
+                            Ior2(
+                                Not(self.e1.x),
+                                Not(self.e1.y)
+                            )
+                        ),
+                        Ior2(
+                            v,
+                            Ior2(
+                                Not(self.e1.x),
+                                self.e1.y
+                            )
+                        )
+                    )
+                )
+            )
+        elif isinstance(self.e1, ITE):
+            e = And2(
+                Ior2(
+                    Not(v),
+                    Ior2(
+                        self.e1.t,
+                        self.e1.e
+                    )
+                ),
+                And2(
+                    Ior2(
+                        Not(v),
+                        Ior2(
+                            Not(self.e1.i),
+                            self.e1.t
+                        )
+                    ),
+                    And2(
+                        Ior2(
+                            v,
+                            Ior2(
+                                self.e1.i,
+                                Not(self.e1.t)
+                            )
+                        ),
+                        And2(
+                            Ior2(
+                                v,
+                                Ior2(
+                                    Not(self.e1.i),
+                                    Not(self.e1.t)
+                                )
+                            ),
+                            Ior2(
+                                v,
+                                Ior2(
+                                    self.e1.i,
+                                    self.e1.e
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        return e
 
-        if isinstance(self.e1, Expr1):
-            if isinstance(self.e1, Not):
-
-
-        return start  # tbd
 
     def print(self):
         return "Let: " + self.v.print() + " = " + self.e1.print() + " do: " + self.e2.print()
