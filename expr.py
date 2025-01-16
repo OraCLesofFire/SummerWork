@@ -4,6 +4,9 @@ import copy
 
 
 class Expr:
+    varList = list()
+    boundVarList = list()
+
     def eval(self, e):
         raise Exception()
 
@@ -21,6 +24,13 @@ class Expr:
     def _rebuild_2(self, start, prev=None):
         raise Exception()
 
+    def rebuild_3(self):
+        newcopy = copy.deepcopy(self)
+        return newcopy._rebuild_3(self)
+
+    def _rebuild_3(self, start):
+        raise Exception()
+
     def print(self):
         raise Exception()
 
@@ -31,7 +41,7 @@ class Expr:
         raise Exception()
 
     def get_vars(self):
-        raise Exception()
+        return self.varList
 
     def make_unique(self):
         return copy.deepcopy(self)._make_unique([])[0]
@@ -42,10 +52,24 @@ class Expr:
     def _change_var(self, v1, v2):
         raise Exception()
 
+def clearVars():
+    Expr.varList = list()
+    Expr.boundVarList = list()
+
+def newVar():
+    newvar = "v" + str(len(Expr.varList) + len(Expr.boundVarList))
+    i = 0
+    while newvar in Expr.varList or newvar in Expr.boundVarList:
+        i += 1
+        newvar = "v" + str((len(Expr.varList) + len(Expr.boundVarList)) + i)
+    return Var(newvar)
+
 
 class Var(Expr):
     def __init__(self, name):
+        assert name not in Expr.varList and name not in Expr.boundVarList
         self.name = name
+        Expr.varList.append(name)
         return
 
     def eval(self, e):
@@ -65,14 +89,14 @@ class Var(Expr):
     def _rebuild_2(self, start, prev=None):
         return start
 
+    def _rebuild_3(self, start):
+        return start
+
     def print(self):
         return str(self.name)
 
     def _pretty_printh(self, depth):
         print("\t"*depth, self.name)
-
-    def get_vars(self):
-        return [self.name]
 
     def _make_unique(self, l):
         return l.append(self.name)
@@ -81,9 +105,20 @@ class Var(Expr):
         return
 
 
+def newBoundVar():
+    newvar = "v" + str(len(Expr.varList) + len(Expr.boundVarList))
+    i = 0
+    while newvar in Expr.varList or newvar in Expr.boundVarList:
+        i += 1
+        newvar = "v" + str((len(Expr.varList) + len(Expr.boundVarList)) + i)
+    return Boundvar(newvar)
+
+
 class Boundvar(Expr):
     def __init__(self, name):
+        assert name not in Expr.varList and name not in Expr.boundVarList
         self.name = name
+        Expr.boundVarList.append(name)
         return
 
     def eval(self, e):
@@ -101,7 +136,9 @@ class Boundvar(Expr):
         return start
 
     def _rebuild_2(self, start, prev=None):
-        print("IDK about this man..")
+        return start
+
+    def _rebuild_3(self, start):
         return start
 
     def print(self):
@@ -109,9 +146,6 @@ class Boundvar(Expr):
 
     def _pretty_printh(self, depth):
         print("\t"*depth, self.name)
-
-    def get_vars(self):
-        return []
 
     def _make_unique(self, l):
         return l.append(self.name)
@@ -139,19 +173,19 @@ class Expr1(Expr):
 
     def _rebuild_2(self, start, prev=None):
         s = start
-        v = Boundvar('y')  # rand var needed
+        v = newBoundVar()
         if not isinstance(self.x, Var) and not isinstance(self.x, Boundvar):
             if isinstance(prev, Let):
-                v = Boundvar(prev.v.name+"y")
                 prev.e1 = self.__class__(v)
                 newstart = Let(v, self.x, start)
-
                 s = newstart._rebuild_2(newstart)
             else:
                 newstart = Let(v, self.x, self.__class__(v))  # could be self.x.rebuild2 idk, please learn and continue from this line
-                newstart.prettyprint()
                 s = newstart._rebuild_2(newstart)
         return s
+
+    def _rebuild_3(self, start):
+        return start
 
     def get_vars(self):
         v = []
@@ -188,6 +222,31 @@ class Expr2(Expr):
         else:
             s = self.y._rebuild(start=s)
         return s
+
+    def _rebuild_2(self, start, prev=None):
+        s = start
+        if not isinstance(self.x, Var) and not isinstance(self.x, Boundvar):
+            v = newBoundVar()
+            if isinstance(prev, Let):
+                prev.e1 = self.__class__(v, self.y)
+                newstart = Let(v, self.x, start)
+                s = newstart._rebuild_2(newstart)
+            else:
+                newstart = Let(v, self.x, self.__class__(v, self.y))  # could be self.x.rebuild2 idk, please learn and continue from this line
+                s = newstart._rebuild_2(newstart)
+        elif not isinstance(self.y, Var) and not isinstance(self.y, Boundvar):
+            v = newBoundVar()
+            if isinstance(prev, Let):
+                prev.e1 = self.__class__(self.x, v)
+                newstart = Let(v, self.y, start)
+                s = newstart._rebuild_2(newstart)
+            else:
+                newstart = Let(v, self.y, self.__class__(self.x, v))  # could be self.x.rebuild2 idk, please learn and continue from this line
+                s = newstart._rebuild_2(newstart)
+        return s
+
+    def _rebuild_3(self, start):
+        return start
 
     def get_vars(self):
         v = []
@@ -275,8 +334,16 @@ class Let(Expr):
 
     def _rebuild_2(self, start, prev=None):
         s = self.e1._rebuild_2(start, prev=self)
-        s = self.e2._rebuild_2(s, prev=None)
         return s
+
+    def _rebuild_3(self, start):
+        assert not isinstance(self.e1, Var)
+
+        if isinstance(self.e1, Expr1):
+            if isinstance(self.e1, Not):
+
+
+        return start  # tbd
 
     def print(self):
         return "Let: " + self.v.print() + " = " + self.e1.print() + " do: " + self.e2.print()
@@ -367,6 +434,37 @@ class ITE(Expr):
             s = newstart._rebuild(newstart)
         else:
             s = self.e._rebuild(start=s)
+        return s
+
+    def _rebuild_2(self, start, prev=None):
+        s = start
+        if not isinstance(self.i, Var) and not isinstance(self.i, Boundvar):
+            v = newBoundVar()
+            if isinstance(prev, Let):
+                prev.e1 = self.__class__(v, self.t, self.e)
+                newstart = Let(v, self.i, start)
+                s = newstart._rebuild_2(newstart)
+            else:
+                newstart = Let(v, self.i, self.__class__(v, self.t, self.e))  # could be self.x.rebuild2 idk, please learn and continue from this line
+                s = newstart._rebuild_2(newstart)
+        elif not isinstance(self.t, Var) and not isinstance(self.t, Boundvar):
+            v = newBoundVar()
+            if isinstance(prev, Let):
+                prev.e1 = self.__class__(self.i, v, self.e)
+                newstart = Let(v, self.t, start)
+                s = newstart._rebuild_2(newstart)
+            else:
+                newstart = Let(v, self.t, self.__class__(self.i, v, self.e))  # could be self.x.rebuild2 idk, please learn and continue from this line
+                s = newstart._rebuild_2(newstart)
+        elif not isinstance(self.e, Var) and not isinstance(self.e, Boundvar):
+            v = newBoundVar()
+            if isinstance(prev, Let):
+                prev.e1 = self.__class__(self.i, self.t, v)
+                newstart = Let(v, self.e, start)
+                s = newstart._rebuild_2(newstart)
+            else:
+                newstart = Let(v, self.e, self.__class__(self.i, self.t, v))  # could be self.x.rebuild2 idk, please learn and continue from this line
+                s = newstart._rebuild_2(newstart)
         return s
 
     def print(self):

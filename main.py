@@ -52,106 +52,82 @@ def randomEnvL(vlookup):
 
 
 def randomExpr():
-    fvars = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
-    bvars = ["K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"]
     exprtypes = ["let", "and2", "or2", "xor2", "not", "buf", "ite", "var"]
     size = 0
-    if rand.randint(0, 10) >= size:
-        if len(fvars) == 1:
-            exp = "var"
-        else:
-            exp = rand.choice(exprtypes)
-    else:
-        exp = "var"
+    exp = rand.choice(exprtypes)
     match exp:
         case "let":
-            bvar = rand.choice(bvars)
-            bvars.remove(bvar)
-            xvars = fvars.copy()
-            xvars.append(bvar)
-            e1, bvars = randomExprh(fvars, bvars, size+2)
-            e2, bvars = randomExprh(xvars, bvars, size+2)
-            exp = expr.Let(expr.Boundvar(bvar), e1, e2)
+            e1 = randomExprh(size+2)
+            e2 = randomExprh(size+2)
+            exp = expr.Let(expr.newBoundVar(), e1, e2)
         case "and2":
-            e1, bvars = randomExprh(fvars, bvars, size+2)
-            e2, bvars = randomExprh(fvars, bvars, size+2)
+            e1 = randomExprh(size+2)
+            e2 = randomExprh(size+2)
             exp = expr.And2(e1, e2)
         case "or2":
-            e1, bvars = randomExprh(fvars, bvars, size + 2)
-            e2, bvars = randomExprh(fvars, bvars, size + 2)
+            e1 = randomExprh(size + 2)
+            e2 = randomExprh(size + 2)
             exp = expr.Ior2(e1, e2)
         case "xor2":
-            e1, bvars = randomExprh(fvars, bvars, size + 2)
-            e2, bvars = randomExprh(fvars, bvars, size + 2)
+            e1 = randomExprh(size + 2)
+            e2 = randomExprh(size + 2)
             exp = expr.Xor2(e1, e2)
         case "not":
-            e1, bvars = randomExprh(fvars, bvars, size + 2)
+            e1 = randomExprh(size + 2)
             exp = expr.Not(e1)
         case "buf":
-            e1, bvars = randomExprh(fvars, bvars, size + 2)
+            e1 = randomExprh(size + 2)
             exp = e1
         case "ite":
-            e1, bvars = randomExprh(fvars, bvars, size+2)
-            e2, bvars = randomExprh(fvars, bvars, size+2)
-            e3, bvars = randomExprh(fvars, bvars, size+2)
+            e1 = randomExprh(size+2)
+            e2 = randomExprh(size+2)
+            e3 = randomExprh(size+2)
             exp = expr.ITE(e1, e2, e3)
         case "var":
-            a = rand.choice(fvars)
-            if a in global_vars:
-                exp = expr.Boundvar(a)
-            else:
-                exp = expr.Var(a)
+            exp = expr.newVar()
     return exp
 
 
-def randomExprh(fvars, bvars, size):
+def randomExprh(size):
     exprtypes = ["let", "and2", "or2", "xor2", "not", "buf", "ite", "var"]
     if rand.randint(0, 10) >= size:
-        if len(fvars) == 1 or len(bvars) == 0:
+        exp = "var"
+    else:
+        if size >= 10:
             exp = "var"
         else:
             exp = rand.choice(exprtypes)
-    else:
-        exp = "var"
     match exp:
         case "let":
-            bvar = rand.choice(bvars)
-            bvars.remove(bvar)
-            xvars = fvars.copy()
-            xvars.append(bvar)
-            e1, bvars = randomExprh(fvars, bvars, size+2)
-            e2, bvars = randomExprh(xvars, bvars, size+2)
-            exp = expr.Let(expr.Boundvar(bvar), e1, e2)
+            e1 = randomExprh(size+2)
+            e2 = randomExprh(size+2)
+            exp = expr.Let(expr.newBoundVar(), e1, e2)
         case "and2":
-            e1, bvars = randomExprh(fvars, bvars, size+2)
-            e2, bvars = randomExprh(fvars, bvars, size+2)
+            e1 = randomExprh(size+2)
+            e2 = randomExprh(size+2)
             exp = expr.And2(e1, e2)
         case "or2":
-            e1, bvars = randomExprh(fvars, bvars, size + 2)
-            e2, bvars = randomExprh(fvars, bvars, size + 2)
+            e1 = randomExprh(size + 2)
+            e2 = randomExprh(size + 2)
             exp = expr.Ior2(e1, e2)
         case "xor2":
-            e1, bvars = randomExprh(fvars, bvars, size + 2)
-            e2, bvars = randomExprh(fvars, bvars, size + 2)
+            e1 = randomExprh(size + 2)
+            e2 = randomExprh(size + 2)
             exp = expr.Xor2(e1, e2)
         case "not":
-            e1, bvars = randomExprh(fvars, bvars, size + 2)
+            e1 = randomExprh(size + 2)
             exp = expr.Not(e1)
         case "buf":
-            e1, bvars = randomExprh(fvars, bvars, size + 2)
+            e1 = randomExprh(size + 2)
             exp = e1
         case "ite":
-            e1, bvars = randomExprh(fvars, bvars, size+2)
-            e2, bvars = randomExprh(fvars, bvars, size+2)
-            e3, bvars = randomExprh(fvars, bvars, size+2)
+            e1 = randomExprh(size+2)
+            e2 = randomExprh(size+2)
+            e3 = randomExprh(size+2)
             exp = expr.ITE(e1, e2, e3)
         case "var":
-            a = rand.choice(fvars)
-            if a in global_vars:
-                exp = expr.Boundvar(a)
-            else:
-                exp = expr.Var(a)
-    return exp, bvars
+            exp = expr.newVar()
+    return exp
 
 
 def BDDTests():
@@ -212,11 +188,15 @@ def BDDTests():
 
 def EXPRTests():
     x = randomExpr()
-    x.prettyprint()
+    # x.prettyprint()
     y = x.rebuild()
-    y.prettyprint()
-    v = x.get_vars()
+    # y.prettyprint()
+    # print("++")
+    z = y.rebuild_2()
+    # z.prettyprint()
+    # print("_____")
 
+    v = x.get_vars()
     newv = []
     for var in v:
         if var not in newv:
@@ -224,6 +204,7 @@ def EXPRTests():
     e = randomEnvL(newv)
     # check that the evaluation using a random evaluator is correct.
     assert x.eval(e) == y.eval(e)
+    assert x.eval(e) == z.eval(e)
 
     b = BDD.BDD()
     c = b.expr_transform(x)
@@ -233,29 +214,27 @@ def EXPRTests():
 
 
 def main():
-
-    x = expr.Not(expr.Not(expr.Not(expr.Var('x'))))
-    x = x.rebuild_2()
-    x.prettyprint()
-
-    # global global_vars
-    # global_vars = ["K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"]
     #
-    # n = 0
-    # # end = 10000
+    # x = expr.Not(expr.Not(expr.Not(expr.newVar())))
+    # x = x.rebuild_2()
+    # x.prettyprint()
+
+    n = 0
+    end = 10000
     # end = 5
-    # # end = 0
-    # test = [end/10 * val for val in range(11)]
-    # while n < end:
-    #     global rand
-    #     rand = random.Random(n)
-    #     BDDTests()
-    #     EXPRTests()
-    #     n += 1
-    #
-    #     # completion percent
-    #     if n in test:
-    #         print((n/(end/100)), "%")
+    # end = 0
+    test = [end/10 * val for val in range(11)]
+    while n < end:
+        global rand
+        rand = random.Random(n)
+        BDDTests()
+        EXPRTests()
+        n += 1
+
+        # completion percent
+        if n in test:
+            print((n/(end/100)), "%")
+        expr.clearVars()
 
 
 global global_vars
