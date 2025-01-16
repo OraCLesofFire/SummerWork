@@ -25,7 +25,7 @@ class Expr:
         raise Exception()
 
     def rebuild_3(self):
-        clearVars()
+        clearBoundVars()
         newcopy = copy.deepcopy(self)
         return self._rebuild_3(newcopy)
 
@@ -55,6 +55,8 @@ class Expr:
 
 def clearVars():
     Expr.varList = list()
+
+def clearBoundVars():
     Expr.boundVarList = list()
 
 def newVar():
@@ -609,6 +611,9 @@ class ITE(Expr):
                 newstart = Let(v, self.e, self.__class__(self.i, self.t, v))  # could be self.x.rebuild2 idk, please learn and continue from this line
                 s = newstart._rebuild_2(newstart)
         return s
+
+    def _rebuild_3(self, start):
+        return start
 
     def print(self):
         return "If: " + self.i.print() + " Then: " + self.t.print() + " Else: " + self.e.print()

@@ -188,15 +188,22 @@ def BDDTests():
 
 def EXPRTests():
     x = randomExpr()
-    # x.prettyprint()
-    y = x.rebuild()
-    # y.prettyprint()
-    # print("++")
-    z = y.rebuild_2()
-    # z.prettyprint()
-    # print("_____")
+    print("___")
+    x.prettyprint()
 
     v = x.get_vars()
+
+    y = x.rebuild()
+    # y.prettyprint()
+    print("++")
+
+    z = y.rebuild_2()
+    z.prettyprint()
+
+    a = z.rebuild_3()
+    print("+++")
+    a.prettyprint()
+
     newv = []
     for var in v:
         if var not in newv:
@@ -235,6 +242,7 @@ def main():
         if n in test:
             print((n/(end/100)), "%")
         expr.clearVars()
+        expr.clearBoundVars()
 
 
 global global_vars
