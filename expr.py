@@ -14,6 +14,13 @@ class Expr:
     def _rebuild(self, start):
         raise Exception()
 
+    def rebuild_2(self):
+        newcopy = copy.deepcopy(self)
+        return newcopy._rebuild_2(start=newcopy)
+
+    def _rebuild_2(self, start, prev=None):
+        raise Exception()
+
     def print(self):
         raise Exception()
 
@@ -55,6 +62,9 @@ class Var(Expr):
     def _rebuild(self, start):
         return start
 
+    def _rebuild_2(self, start, prev=None):
+        return start
+
     def print(self):
         return str(self.name)
 
@@ -90,6 +100,10 @@ class Boundvar(Expr):
     def _rebuild(self, start):
         return start
 
+    def _rebuild_2(self, start, prev=None):
+        print("IDK about this man..")
+        return start
+
     def print(self):
         return str(self.name)
 
@@ -121,6 +135,22 @@ class Expr1(Expr):
             s = newstart._rebuild(newstart)
         else:
             s = self.x._rebuild(start=s)
+        return s
+
+    def _rebuild_2(self, start, prev=None):
+        s = start
+        v = Boundvar('y')  # rand var needed
+        if not isinstance(self.x, Var) and not isinstance(self.x, Boundvar):
+            if isinstance(prev, Let):
+                v = Boundvar(prev.v.name+"y")
+                prev.e1 = self.__class__(v)
+                newstart = Let(v, self.x, start)
+
+                s = newstart._rebuild_2(newstart)
+            else:
+                newstart = Let(v, self.x, self.__class__(v))  # could be self.x.rebuild2 idk, please learn and continue from this line
+                newstart.prettyprint()
+                s = newstart._rebuild_2(newstart)
         return s
 
     def get_vars(self):
@@ -216,6 +246,8 @@ class ExprN(Expr):
 
 
 class Let(Expr):
+    # let Variable v get e1, Do e2
+
     def __init__(self, v, e1, e2):
         assert isinstance(v, Boundvar)
         assert isinstance(e1, Expr)
@@ -239,6 +271,11 @@ class Let(Expr):
             s = self.e1._rebuild(start=s)
         if not isinstance(self.e2, Let):
             self.e2 = self.e2._rebuild(start=self.e2)
+        return s
+
+    def _rebuild_2(self, start, prev=None):
+        s = self.e1._rebuild_2(start, prev=self)
+        s = self.e2._rebuild_2(s, prev=None)
         return s
 
     def print(self):

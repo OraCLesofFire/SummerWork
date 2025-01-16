@@ -76,7 +76,7 @@ class BDD(object):
             assert isinstance(self, NonTerminal)
             return self.left.num_vertices() + self.right.num_vertices() + 1
 
-    def print(self, string=None):
+    def print(self, string=""):
         print(string)
         if isinstance(self, Terminal):
             print("Terminal at ", self.val)

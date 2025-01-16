@@ -212,7 +212,9 @@ def BDDTests():
 
 def EXPRTests():
     x = randomExpr()
+    x.prettyprint()
     y = x.rebuild()
+    y.prettyprint()
     v = x.get_vars()
 
     newv = []
@@ -231,24 +233,29 @@ def EXPRTests():
 
 
 def main():
-    global global_vars
-    global_vars = ["K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"]
 
-    n = 0
-    end = 10000
-    # end = 1
-    # end = 0
-    test = [end/10 * val for val in range(11)]
-    while n < end:
-        global rand
-        rand = random.Random(n)
-        BDDTests()
-        EXPRTests()
-        n += 1
+    x = expr.Not(expr.Not(expr.Not(expr.Var('x'))))
+    x = x.rebuild_2()
+    x.prettyprint()
 
-        # completion percent
-        if n in test:
-            print((n/(end/100)), "%")
+    # global global_vars
+    # global_vars = ["K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"]
+    #
+    # n = 0
+    # # end = 10000
+    # end = 5
+    # # end = 0
+    # test = [end/10 * val for val in range(11)]
+    # while n < end:
+    #     global rand
+    #     rand = random.Random(n)
+    #     BDDTests()
+    #     EXPRTests()
+    #     n += 1
+    #
+    #     # completion percent
+    #     if n in test:
+    #         print((n/(end/100)), "%")
 
 
 global global_vars
