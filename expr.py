@@ -191,7 +191,6 @@ class Expr1(Expr):
     def _rebuild_3(self):
         return self
 
-
     def _make_unique(self, l):
         return self, self.x._make_unique(l)
 
@@ -399,79 +398,54 @@ class Let(Expr):
                     Not(v),
                     Ior2(
                         self.e1.x,
-                        self.e1.y
-                    )
-                ),
+                        self.e1.y)),
                 And2(
                     Ior2(
                         v,
                         Ior2(
                             self.e1.x,
-                            Not(self.e1.y)
-                        )
-                    ),
+                            Not(self.e1.y))),
                     And2(
                         Ior2(
                             Not(v),
                             Ior2(
                                 Not(self.e1.x),
-                                Not(self.e1.y)
-                            )
-                        ),
+                                Not(self.e1.y))),
                         Ior2(
                             v,
                             Ior2(
                                 Not(self.e1.x),
-                                self.e1.y
-                            )
-                        )
-                    )
-                )
-            )
+                                self.e1.y)))))
         elif isinstance(self.e1, ITE):
             e = And2(
                 Ior2(
                     Not(v),
                     Ior2(
                         self.e1.t,
-                        self.e1.e
-                    )
-                ),
+                        self.e1.e)),
                 And2(
                     Ior2(
                         Not(v),
                         Ior2(
                             Not(self.e1.i),
-                            self.e1.t
-                        )
-                    ),
+                            self.e1.t)),
                     And2(
                         Ior2(
                             v,
                             Ior2(
                                 self.e1.i,
-                                Not(self.e1.t)
-                            )
-                        ),
+                                Not(self.e1.t))),
                         And2(
                             Ior2(
                                 v,
                                 Ior2(
                                     Not(self.e1.i),
-                                    Not(self.e1.t)
-                                )
-                            ),
+                                    Not(self.e1.t))),
                             Ior2(
                                 v,
                                 Ior2(
                                     self.e1.i,
-                                    self.e1.e
-                                )
-                            )
-                        )
-                    )
-                )
-            )
+                                    self.e1.e))))))
         return And2(e, self.e2._rebuild_3())
 
 
