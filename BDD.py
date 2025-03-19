@@ -120,8 +120,12 @@ class BDD(object):
 
     def getModel(self):
         if isinstance(self, Terminal):
-            # temp result here
-            return None
+            # Why are you asking for a solution to True or False???
+            if self.val == 0:
+                return None
+            else:
+                return dict()
+
         else:
             assert isinstance(self, NonTerminal)
 
@@ -138,7 +142,7 @@ class BDD(object):
 
                 e, solutionExists = self.right.__getModel__(e, solutionExists)  # search right-hand side for solution
             if solutionExists:
-                e[self.varid] = True
+                e[self.varid] = True  # direction to solution at this node
                 return env.Env(**e)
 
             else:  # failure condition
@@ -147,6 +151,7 @@ class BDD(object):
     def __getModel__(self, e, solutionExists):
 
         # if our solution is already found, just return
+        # this code shouldn't ever actually be executed
         if solutionExists:
             return e, solutionExists
 
@@ -177,20 +182,6 @@ class BDD(object):
     def expr_transform(self, expression, e=None):
         if e is None:
             e = env.Env()
-        # if isinstance(expression, expr.ExprN):
-        #     args = [self.expr_transform(exp, e) for exp in expression.args]
-        #     assert isinstance(all(args), BDD)
-        #     e1 = args[0]
-        #     if isinstance(expression, expr.And):
-        #         for e in args[1:]:
-        #             e1 = e1.And(e)
-        #     if isinstance(expression, expr.Ior):
-        #         for e in args[1:]:
-        #             e1 = e1.Or(e)
-        #     if isinstance(expression, expr.Xor):
-        #         for e in args[1:]:
-        #             e1 = e1.Xor(e)
-        #     return e1, e
         if isinstance(expression, expr.Expr2):
             x = self.expr_transform(expression.x, e)
             y = self.expr_transform(expression.y, e)
