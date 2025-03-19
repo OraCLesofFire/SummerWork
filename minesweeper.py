@@ -189,11 +189,14 @@ def checkSAT(c, vlist):
     return solution
 
 
-def checkForce(f, c):
-    s = bddAPI.Solver()
-    c = bddAPI.And([bddAPI.Not(f), c])
-    s.add(c)
-    return s.check() != bddAPI.sat
+def checkForce(c, v, b):  # this needs to be fixed
+    if b:
+        x = c.And(v.Not())
+        res = True if type(x) == BDD.Terminal else False
+    else:
+        x = c.Or(v.Not())
+        res = True if x.num_vertices() == 2 else False
+    return res
 
 
 def tuplestr(v):
@@ -207,8 +210,8 @@ def tuplestr(v):
 def confirmUnforced(c, solution):
     acc = True
     for (v, b) in solution.items():
-        vx = v if b else bddAPI.Not(v)
-        res = checkForce(vx, c)
+        # vx = v if b else bddAPI.Not(v)
+        res = checkForce(c, v, b)
         print("Tuple {:>5} {}forced {}".format(tuplestr(v), '*IS* ' if res else 'is un',
                                                "to {}".format(b) if res else ""))
         acc &= not res
