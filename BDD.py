@@ -421,18 +421,3 @@ class NonTerminal(BDD):
 
     def num_vertices(self):
         return self.numVertices
-
-    def get_subgraph(self):
-        d = dict()
-        if not self.mark:
-            d[self.id] = self
-            if isinstance(self.left, NonTerminal):
-                d.update(self.left.get_subgraph())
-            else:
-                d[self.left.id] = self.left
-            if isinstance(self.right, NonTerminal):
-                d.update(self.right.get_subgraph())
-            else:
-                d[self.right.id] = self.right
-            self.mark = True
-        return d
