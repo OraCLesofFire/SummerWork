@@ -124,19 +124,24 @@ class BDD(object):
             return None
         else:
             assert isinstance(self, NonTerminal)
-            e = dict()
-            solutionExists = False
-            e[self.varid] = False
-            e, solutionExists = self.left.__getModel__(e, solutionExists)
+
+            e = dict()  # solution
+            solutionExists = False  # termination condition
+
+            e, solutionExists = self.left.__getModel__(e, solutionExists)  # search left-hand side for solution
             if solutionExists:
+                e[self.varid] = False  # direction to solution at this node
                 return env.Env(**e)
+
             else:
                 assert isinstance(e, dict)
-                e[self.varid] = True
-                e, solutionExists = self.right.__getModel__(e, solutionExists)
+
+                e, solutionExists = self.right.__getModel__(e, solutionExists)  # search right-hand side for solution
             if solutionExists:
+                e[self.varid] = True
                 return env.Env(**e)
-            else:
+
+            else:  # failure condition
                 return None
 
     def __getModel__(self, e, solutionExists):
