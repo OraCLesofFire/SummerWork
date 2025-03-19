@@ -331,24 +331,20 @@ class Let(Expr):
         v = Var(self.v.name)
         if isinstance(self.e1, Not):
             e = And2(
-                Ior2(
-                    v,
-                    self.e1.x),
-                Ior2(
-                    Not(v),
-                    Not(self.e1.x)
-                )
-            )
+                    Ior2(
+                        v,
+                        self.e1.x),
+                    Ior2(
+                        Not(v),
+                        Not(self.e1.x)))
         elif isinstance(self.e1, Buf):
             e = And2(
-                Ior2(
-                    Not(v),
-                    self.e1.x),
-                Ior2(
-                    v,
-                    Not(self.e1.x)
-                )
-            )
+                    Ior2(
+                        Not(v),
+                        self.e1.x),
+                    Ior2(
+                        v,
+                        Not(self.e1.x)))
         elif isinstance(self.e1, And2):
             assert isinstance(self.e1, Expr2)
             e = And2(
@@ -373,79 +369,73 @@ class Let(Expr):
         elif isinstance(self.e1, Ior2):
             assert isinstance(self.e1, Expr2)
             e = And2(
-                Ior2(
-                    v,
-                    Not(self.e1.y)
-                ),
-                And2(
                     Ior2(
                         v,
-                        Not(self.e1.x)
-                    ),
+                        Not(self.e1.y)),
+                    And2(
+                        Ior2(
+                            v,
+                            Not(self.e1.x)),
+                        Ior2(
+                            Not(v),
+                            Ior2(
+                                self.e1.x,
+                                self.e1.y))))
+        elif isinstance(self.e1, Xor2):
+            assert isinstance(self.e1, Expr2)
+            e = And2(
                     Ior2(
                         Not(v),
                         Ior2(
                             self.e1.x,
-                            self.e1.y
-                        )
-                    )
-                )
-            )
-        elif isinstance(self.e1, Xor2):
-            assert isinstance(self.e1, Expr2)
-            e = And2(
-                Ior2(
-                    Not(v),
-                    Ior2(
-                        self.e1.x,
-                        self.e1.y)),
-                And2(
-                    Ior2(
-                        v,
+                            self.e1.y)),
+                    And2(
                         Ior2(
-                            self.e1.x,
-                            Not(self.e1.y))),
+                            v,
+                            Ior2(
+                                self.e1.x,
+                                Not(self.e1.y))),
+                        And2(
+                            Ior2(
+                                Not(v),
+                                Ior2(
+                                    Not(self.e1.x),
+                                    Not(self.e1.y))),
+                            Ior2(
+                                v,
+                                Ior2(
+                                    Not(self.e1.x),
+                                    self.e1.y)))))
+        elif isinstance(self.e1, ITE):
+            e = And2(
+                    Ior2(
+                        Not(v),
+                        Ior2(
+                            self.e1.t,
+                            self.e1.e)),
                     And2(
                         Ior2(
                             Not(v),
                             Ior2(
-                                Not(self.e1.x),
-                                Not(self.e1.y))),
-                        Ior2(
-                            v,
-                            Ior2(
-                                Not(self.e1.x),
-                                self.e1.y)))))
-        elif isinstance(self.e1, ITE):
-            e = And2(
-                Ior2(
-                    Not(v),
-                    Ior2(
-                        self.e1.t,
-                        self.e1.e)),
-                And2(
-                    Ior2(
-                        Not(v),
-                        Ior2(
-                            Not(self.e1.i),
-                            self.e1.t)),
-                    And2(
-                        Ior2(
-                            v,
-                            Ior2(
-                                self.e1.i,
-                                Not(self.e1.t))),
+                                Not(self.e1.i),
+                                self.e1.t)),
                         And2(
                             Ior2(
                                 v,
                                 Ior2(
-                                    Not(self.e1.i),
-                                    Not(self.e1.t))),
-                            Ior2(
-                                v,
-                                Ior2(
                                     self.e1.i,
-                                    self.e1.e))))))
+                                    Not(self.e1.t))),
+                            And2(
+                                Ior2(
+                                    v,
+                                    Ior2(
+                                        Not(self.e1.i),
+                                        Not(self.e1.t))),
+                                Ior2(
+                                    v,
+                                    Ior2(
+                                        self.e1.i,
+                                        self.e1.e))))))
         return And2(e, self.e2._rebuild_3())
 
 
