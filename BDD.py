@@ -269,8 +269,10 @@ class BDD(object):
             # negation
             if self.id * -1 in BDD.vertexList:
                 return BDD.vertexList[self.id * -1]
+            # terminal
             if isinstance(self, Terminal):
                 return self.perform_operation(operation, vertices)
+            # expression
             else:
                 assert isinstance(self, NonTerminal) and isinstance(self.left, BDD) and isinstance(self.right, BDD)
                 return self.non_terminal(self.varid, self.left.apply_operation(operation, vertices),
@@ -340,15 +342,15 @@ class BDD(object):
                     vertsleft[i] = v.left
             return self.non_terminal(largest.varid,
                                      vertsleft[0].apply_operation(operation, [vertsleft[1], vertsleft[2]]),
-                                     vertsright[0].apply_operation(operation, [vertsright[1], vertsright[2]])
-                                     )
+                                     vertsright[0].apply_operation(operation, [vertsright[1], vertsright[2]]))
 
         else:
             v1 = self
             v2 = vertices[0]
             if v2 == largest:
                 (v1, v2) = (v2, v1)
-            return self.non_terminal(v1.varid, v1.left.apply_operation(operation, [v2]),
+            return self.non_terminal(v1.varid,
+                                     v1.left.apply_operation(operation, [v2]),
                                      v1.right.apply_operation(operation, [v2]))
 
 
