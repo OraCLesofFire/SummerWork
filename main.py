@@ -188,48 +188,64 @@ def BDDTests():
 
 def EXPRTests():
     x = randomExpr()
-    print("___")
-    x.prettyprint()
-
-    v = x.get_vars()
-
+    # print("___")
+    # x.prettyprint()
+    # print("+")
     y = x.rebuild()
     # y.prettyprint()
-    print("++")
-
+    # print("++")
     z = y.rebuild_2()
-    z.prettyprint()
-
+    # z.prettyprint()
+    v1 = z.get_vars()
+    # print("+++")
     a = z.rebuild_3()
-    print("+++")
-    a.prettyprint()
+    # a.prettyprint()
+    # print("___")
 
-    newv = []
-    for var in v:
-        if var not in newv:
-            newv.append(var)
-    e = randomEnvL(newv)
-    # check that the evaluation using a random evaluator is correct.
+    newv1 = []
+    for var in v1:
+        if var not in newv1:
+            newv1.append(var)
+    e = randomEnvL(newv1)
+
+    # check that the evaluation using a random environment is correct.
     assert x.eval(e) == y.eval(e)
     assert x.eval(e) == z.eval(e)
 
     b = BDD.BDD()
     c = b.expr_transform(x)
     d = b.expr_transform(y)
+    e = b.expr_transform(z)
+    f = b.expr_transform(a)
     # check that they are equivalent by doing a BDD transformation.
     assert c == d
+    assert c == e
+    assert (c.Not().Or(f))  # assert x=>y == (!x | y)
 
 
 def main():
-    #
-    # x = expr.Not(expr.Not(expr.Not(expr.newVar())))
-    # x = x.rebuild_2()
+    # a = expr.Boundvar("a")
+    # b = expr.Boundvar("b")
+    # c = expr.Boundvar("c")
+    # d = expr.Var("d")
+    # e = expr.Boundvar("e")
+    # f = expr.Var("f")
+    # g = expr.Var("g")
+    # h = expr.Var("h")
+    # i = expr.Var("I")
+    # j = expr.Var("J")
+    # x = expr.Let(a, expr.Let(b, expr.Let(c, d, expr.Let(e, expr.And2(f, g), h)), i), j)
     # x.prettyprint()
+    # y = x.rebuild()
+    # print("+")
+    # y.prettyprint()
+
+
 
     n = 0
-    end = 10000
+    end = 100000
     # end = 5
-    # end = 0
+    # end = 1
     test = [end/10 * val for val in range(11)]
     while n < end:
         global rand

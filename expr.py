@@ -2,7 +2,6 @@
 import env
 import copy
 
-
 class Expr:
     varList = list()
     boundVarList = list()
@@ -26,11 +25,13 @@ class Expr:
 
     def rebuild_3(self):
         clearBoundVars()
-        newcopy = copy.deepcopy(self)
-        return self._rebuild_3(newcopy)
+        return self._rebuild_3()
 
-    def _rebuild_3(self, start):
+    def _rebuild_3(self):
         raise Exception()
+
+    def get_vars(self):
+        return copy.deepcopy(self.varList)
 
     def print(self):
         raise Exception()
@@ -41,9 +42,6 @@ class Expr:
     def _pretty_printh(self, depth):
         raise Exception()
 
-    def get_vars(self):
-        return self.varList
-
     def make_unique(self):
         return copy.deepcopy(self)._make_unique([])[0]
 
@@ -53,11 +51,14 @@ class Expr:
     def _change_var(self, v1, v2):
         raise Exception()
 
+
 def clearVars():
     Expr.varList = list()
 
+
 def clearBoundVars():
     Expr.boundVarList = list()
+
 
 def newVar():
     newvar = "v" + str(len(Expr.varList) + len(Expr.boundVarList))
@@ -92,8 +93,8 @@ class Var(Expr):
     def _rebuild_2(self, start, prev=None):
         return start
 
-    def _rebuild_3(self, start):
-        return start
+    def _rebuild_3(self):
+        return self
 
     def print(self):
         return str(self.name)
@@ -141,8 +142,8 @@ class Boundvar(Expr):
     def _rebuild_2(self, start, prev=None):
         return start
 
-    def _rebuild_3(self, start):
-        return start
+    def _rebuild_3(self):
+        return self
 
     def print(self):
         return str(self.name)
@@ -187,13 +188,9 @@ class Expr1(Expr):
                 s = newstart._rebuild_2(newstart)
         return s
 
-    def _rebuild_3(self, start):
-        return start
+    def _rebuild_3(self):
+        return self
 
-    def get_vars(self):
-        v = []
-        v.extend(self.x.get_vars())
-        return v
 
     def _make_unique(self, l):
         return self, self.x._make_unique(l)
@@ -248,14 +245,9 @@ class Expr2(Expr):
                 s = newstart._rebuild_2(newstart)
         return s
 
-    def _rebuild_3(self, start):
-        return start
+    def _rebuild_3(self):
+        return self
 
-    def get_vars(self):
-        v = []
-        v.extend(self.x.get_vars())
-        v.extend(self.y.get_vars())
-        return v
 
     def _make_unique(self, l):
         l = self.x._make_unique(l)
@@ -288,12 +280,6 @@ class ExprN(Expr):
                 assert isinstance(self.args[i], Expr)
                 s = self.args[i]._rebuild(start=s)
         return s
-
-    def get_vars(self):
-        v = []
-        for a in self.args:
-            v.extend(a.get_vars())
-        return v
 
     def _make_unique(self, l):
         for a in self.args:
@@ -331,16 +317,17 @@ class Let(Expr):
             s = newstart._rebuild(newstart)
         else:
             s = self.e1._rebuild(start=s)
-        if not isinstance(self.e2, Let):
-            self.e2 = self.e2._rebuild(start=self.e2)
+        # if not isinstance(self.e2, Let):
+        self.e2 = self.e2._rebuild(start=self.e2)
         return s
 
     def _rebuild_2(self, start, prev=None):
         s = self.e1._rebuild_2(start, prev=self)
         return s
 
-    def _rebuild_3(self, start):
-        assert not isinstance(self.e1, Var)
+    def _rebuild_3(self):
+        if isinstance(self.e1, Var):
+            return self.e2._rebuild_3()
         e = Expr
         v = Var(self.v.name)
         if isinstance(self.e1, Not):
@@ -353,7 +340,6 @@ class Let(Expr):
                     Not(self.e1.x)
                 )
             )
-            return And2(e, self.e2._rebuild_3(start))
         elif isinstance(self.e1, Buf):
             e = And2(
                 Ior2(
@@ -364,7 +350,6 @@ class Let(Expr):
                     Not(self.e1.x)
                 )
             )
-            return And2(e, self.e2._rebuild_3(start))
         elif isinstance(self.e1, And2):
             assert isinstance(self.e1, Expr2)
             e = And2(
@@ -487,7 +472,7 @@ class Let(Expr):
                     )
                 )
             )
-        return e
+        return And2(e, self.e2._rebuild_3())
 
 
     def print(self):
@@ -499,12 +484,6 @@ class Let(Expr):
         print("\t"*depth, "Do")
         self.e2._pretty_printh(depth + 1)
         print("\t"*depth, ")")
-
-    def get_vars(self):
-        v = []
-        v.extend(self.e1.get_vars())
-        v.extend(self.e2.get_vars())
-        return v
 
     def _make_unique(self, l):
         if self.v in l:
@@ -612,8 +591,8 @@ class ITE(Expr):
                 s = newstart._rebuild_2(newstart)
         return s
 
-    def _rebuild_3(self, start):
-        return start
+    def _rebuild_3(self):
+        return self
 
     def print(self):
         return "If: " + self.i.print() + " Then: " + self.t.print() + " Else: " + self.e.print()
@@ -626,13 +605,6 @@ class ITE(Expr):
         print("\t"*depth, "Else: ")
         self.e._pretty_printh(depth + 1)
         print("\t"*depth, ")")
-
-    def get_vars(self):
-        v = []
-        v.extend(self.i.get_vars())
-        v.extend(self.t.get_vars())
-        v.extend(self.e.get_vars())
-        return v
 
     def _make_unique(self, l):
         l = self.i._make_unique(l)
