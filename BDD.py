@@ -67,7 +67,7 @@ class BDD(object):
 
     @classmethod
     def bool(cls, v):
-        return NonTerminal(v, NonTerminal.one, NonTerminal.zero)
+        return NonTerminal(v, NonTerminal.zero, NonTerminal.one)
 
     def num_vertices(self):
         if isinstance(self, Terminal):

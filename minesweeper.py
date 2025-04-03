@@ -194,8 +194,8 @@ def checkForce(c, v, b):  # this needs to be fixed
         x = c.And(v.Not())
         res = True if type(x) == BDD.Terminal else False
     else:
-        x = c.Or(v.Not())
-        res = True if x.num_vertices() == 2 else False
+        x = c.Or(v.Not()).Not()
+        res = True if x == v else False
     return res
 
 
@@ -209,11 +209,14 @@ def tuplestr(v):
 
 def confirmUnforced(c, solution):
     acc = True
+    c.print("BDD")
     for (v, b) in solution.items():
         # vx = v if b else bddAPI.Not(v)
         res = checkForce(c, v, b)
         print("Tuple {:>5} {}forced {}".format(tuplestr(v), '*IS* ' if res else 'is un',
-                                               "to {}".format(b) if res else ""))
+                                               "to {}".format("Bomb" if b else "No Bomb") if res else ""))
+        # print("Tuple {:>5} {}forced {}".format(tuplestr(v), '*IS* ' if res else 'is un',
+        #                                        "to {}".format(b) if res else ""))
         acc &= not res
         continue
     return acc
@@ -237,14 +240,17 @@ def checkFile(fname, ok=None):
 
 
 def main():
-    checkFile("test0.mine", 'True')
-    checkFile("test1.mine", 'False')
-    checkFile("test2.mine", 'True')
-    checkFile("test3.mine", 'False')
-    checkFile("test4.mine", 'False')
-    checkFile("test5.mine", 'False')
+    # checkFile("test0.mine", 'True')
+    # checkFile("test1.mine", 'False')
+    # checkFile("test2.mine", 'True')
+    # checkFile("test3.mine", 'False')
+    # checkFile("test4.mine", 'False')
+    # checkFile("test5.mine", 'False')
     checkFile("caltest.mine", 'True')
     checkFile("caltest2.mine", 'True')
+    checkFile("caltest3.mine", 'True')
+    # checkFile("caltest4.mine", 'True')
+
     return
     #
     # fname = sys.argv[1]

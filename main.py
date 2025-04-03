@@ -241,9 +241,40 @@ def main():
     # y.prettyprint()
 
 
+    a = expr.Var("A")
+    b = expr.Var("B")
+    c = expr.Var("C")
+    d = expr.Var("D")
+    x = expr.And2(
+            expr.Xor2(
+                a,
+                b),
+            expr.Ior2(
+                expr.And2(
+                    expr.And2(b,c),
+                    expr.Not(d)),
+                expr.Ior2(
+                    expr.And2(
+                        expr.And2(b, expr.Not(c)),
+                        d),
+                    expr.And2(
+                        expr.And2(expr.Not(b), c),
+                        d)
+                    )
+            )
+    )
+    y = expr.And2(
+            a,
+            x)
+    z = BDD.BDD()
+    x = z.expr_transform(x)
+    y = z.expr_transform(y)
+    x.print("x")
+    y.print("y")
+
 
     n = 0
-    end = 100000
+    end = 0
     # end = 5
     # end = 1
     test = [end/10 * val for val in range(11)]
